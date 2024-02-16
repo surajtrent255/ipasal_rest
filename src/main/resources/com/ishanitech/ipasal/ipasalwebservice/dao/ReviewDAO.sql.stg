@@ -1,0 +1,44 @@
+group ReviewDAO;
+
+getReviewsByProductId(productId, caseQuery) ::= <<
+    SELECT * FROM review r WHERE
+     r.product_id = <productId>
+     AND r.deleted = 0
+     AND r.approved = 1
+     <caseQuery>
+>>
+
+
+getAllReviews(caseQuery) ::= <<
+	SELECT * FROM review r WHERE
+	r.deleted = 0
+	<caseQuery>
+>>
+
+getAllApprovedReviews(caseQuery) ::= <<
+	SELECT * FROM review r 
+	INNER JOIN review_details rd 
+	ON r.review_id = rd.review_id 
+	WHERE r.deleted = 0 
+	AND r.approved = 1 
+	AND rd.review_status = 2
+	<caseQuery>
+>>
+
+getAllProcessingReviews(caseQuery) ::= <<
+	SELECT * FROM review r 
+	INNER JOIN review_details rd 
+	ON r.review_id = rd.review_id 
+	WHERE rd.review_status = 1 
+	AND r.deleted = 0
+	<caseQuery>
+>>
+
+getAllRejectedReviews(caseQuery) ::= <<
+	SELECT * FROM review r 
+	INNER JOIN review_details rd 
+	ON r.review_id = rd.review_id 
+	WHERE rd.review_status = 3 
+	AND r.deleted = 0
+	<caseQuery>
+>>

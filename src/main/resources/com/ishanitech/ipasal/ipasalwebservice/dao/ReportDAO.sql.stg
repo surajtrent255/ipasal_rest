@@ -1,0 +1,16 @@
+group ReportDAO;
+
+getAllOrdersBetweenRange(caseQuery, startDate, endDate) ::= <<
+	SELECT o.*, os.status FROM orders o INNER JOIN order_status os
+	ON os.status_id = o.order_status
+	WHERE o.order_date BETWEEN <startDate> AND <endDate>
+	<caseQuery>
+>>
+
+
+getOrdersBetweenRange(caseQuery,status , startDate, endDate) ::= <<
+	SELECT o.*,  os.status FROM orders o INNER JOIN order_status os 
+	ON os.status_id = o.order_status
+	WHERE o.order_status = <status> AND o.order_date BETWEEN <startDate> and <endDate>
+	<caseQuery>
+>>

@@ -1,0 +1,40 @@
+group OrderDAO;
+
+getAllOrders(caseQuery) ::= <<
+	SELECT o.*,  os.status FROM orders o
+		INNER JOIN order_status os 
+			ON os.status_id = o.order_status
+   			WHERE o.order_status = 1 
+   			<caseQuery>
+>>
+
+getAllOrdersList(caseQuery) ::= <<
+	SELECT o.*,  os.status FROM orders o
+		INNER JOIN order_status os 
+			ON os.status_id = o.order_status 
+   			<caseQuery>
+>>
+
+getDeliveredOrdersList(caseQuery) ::= <<
+	SELECT o.*,  os.status FROM orders o
+		INNER JOIN order_status os 
+			ON os.status_id = o.order_status
+			WHERE o.order_status = 2 
+   			<caseQuery>
+>>
+
+getCancelledOrdersList(caseQuery) ::= <<
+	SELECT o.*,  os.status FROM orders o
+		INNER JOIN order_status os 
+			ON os.status_id = o.order_status
+			WHERE o.order_status = 3 
+   			<caseQuery>
+>>
+
+getOrdersByUserId(caseQuery, userId) ::= <<
+	SELECT * FROM orders o INNER JOIN order_status os
+		ON o.order_status = os.status_id
+		WHERE o.order_status = 1 
+		AND o.ordered_by = <userId>
+		<caseQuery>
+>>

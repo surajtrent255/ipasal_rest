@@ -1,0 +1,72 @@
+group ProductDAO;
+
+getProductsByParentCategoryId(caseQuantity, parentId) ::= <<
+	SELECT p.*,c.* FROM products p
+    		INNER JOIN product_category pc
+    		ON p.product_id = pc.product_id 
+    		INNER JOIN category c
+    		ON pc.category_id = c.category_id
+    		WHERE c.parent_id IN (WITH RECURSIVE cte 
+	   			AS (SELECT category_id
+			        FROM category AS c1 
+			        WHERE category_id = <parentId>
+			        UNION ALL
+			        SELECT c1.category_id
+			        FROM category AS c1 
+			        JOIN cte ON c1.parent_id = cte.category_id)
+				SELECT * FROM cte)
+		   	AND c.deleted = 0
+			AND p.deleted = 0
+    		 <caseQuantity>	 
+>>
+
+getProductsByCategoryId(categoryId, caseQuantity) ::= << 
+	SELECT p.*,c.* FROM products p   
+    			INNER JOIN product_category pc   
+    		    ON p.product_id = pc.product_id   
+    		    INNER JOIN category c   
+    		    ON pc.category_id = c.category_id   
+    		    WHERE c.category_id IN (WITH RECURSIVE cte 
+	   			AS (SELECT category_id
+			        FROM category AS c1 
+			        WHERE category_id = <categoryId>
+			        UNION ALL
+			        SELECT c1.category_id
+			        FROM category AS c1 
+			        JOIN cte ON c1.parent_id = cte.category_id)
+				SELECT * FROM cte) 
+    		    AND c.deleted = 0   
+    		    AND p.deleted = 0
+    		    <caseQuantity>
+>>
+
+searchProduct(searchKey, caseQuery) ::= <<
+	SELECT p.*, c.* FROM products p 
+    		INNER JOIN product_category pc 
+    		ON p.product_id = pc.product_id
+    		INNER JOIN category c 
+    		ON pc.category_id = c.category_id
+    		WHERE p.product_name LIKE <searchKey>
+    		AND c.deleted = 0 
+    		AND p.deleted = 0
+    		<caseQuery>
+>>
+
+getWholeSearchProduct(searchKey, caseQuery) ::= <<
+	SELECT p.* ,pc.category_id, c.category_name, c.parent_id FROM products p
+    		INNER JOIN product_category pc
+    		ON p.product_id = pc.product_id
+    		INNER JOIN category c
+    		ON pc.category_id = c.category_id
+    		WHERE p.product_name LIKE <searchKey>
+    		AND c.deleted = 0
+    		AND p.deleted = 0
+    		<caseQuery>
+>>
+
+getAllSaleProducts(caseQuery) ::= <<
+	SELECT * FROM products p WHERE p.discount_percent > 0 AND p.deleted = 0
+	<caseQuery>
+>>
+
+

@@ -1,0 +1,17 @@
+group ProductTagsDAO;
+
+getAllProductsWithGivenTag(caseQuery, searchTag) ::= <<
+	SELECT * FROM products p INNER JOIN product_tags pt 
+	ON p.product_id = pt.product_id 
+	WHERE p.deleted = 0 AND pt.product_tag = <searchTag>
+	<caseQuery>
+>>	
+
+getAllProductsWithGivenPromoId(caseQuery, promoId) ::= <<
+	SELECT * FROM products p INNER JOIN product_tags pt 
+	ON p.product_id = pt.product_id 
+	INNER JOIN promotional_sales ps 
+	ON pt.product_tag = ps.promotional_tag 
+	WHERE p.deleted = 0 AND ps.promotional_sales_id = <promoId>
+	<caseQuery>
+>>	
